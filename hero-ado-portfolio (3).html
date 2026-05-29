@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Ado — Aerospace Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700;1,900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+:root {
+  --crimson: #8B1A1A;
+  --crimson-deep: #6B1212;
+  --crimson-light: #A52020;
+  --cream: #F5F0E8;
+  --cream-dark: #EDE5D4;
+  --cream-darker: #D4C8B4;
+  --ink: #1A1208;
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --muted: rgba(26,18,8,0.45);
+  --border-cream: rgba(26,18,8,0.12);
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR */
+.cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--crimson); border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%,-50%);
+  transition: width 0.3s cubic-bezier(.4,0,.2,1), height 0.3s cubic-bezier(.4,0,.2,1), background 0.3s;
+  mix-blend-mode: multiply; will-change: left, top;
+}
+.cursor.expand { width: 52px; height: 52px; background: rgba(139,26,26,0.1); }
+.cursor-ring {
+  position: fixed; width: 40px; height: 40px;
+  border: 1.5px solid rgba(139,26,26,0.45); border-radius: 50%;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%,-50%);
+  transition: opacity 0.3s; will-change: left, top;
+}
+.cursor-ring.hide { opacity: 0; }
+
+/* PROGRESS */
+.scroll-progress { position: fixed; top: 56px; left: 0; right: 0; height: 2px; z-index: 600; }
+.scroll-progress-bar { height: 100%; background: linear-gradient(90deg, var(--gold), var(--crimson-light)); width: 0%; }
+
+/* NAV */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 3rem; height: 56px;
+  background: var(--crimson);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  transition: box-shadow 0.4s;
+}
+.top-bar.scrolled { box-shadow: 0 4px 40px rgba(107,18,18,0.5); }
+.tb-left { font-family: 'Montserrat', sans-serif; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(245,240,232,0.55); }
+.tb-center { font-family: 'Playfair Display', Georgia, serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.12em; color: var(--cream); text-align: center; }
+.tb-right { display: flex; justify-content: flex-end; gap: 2.5rem; }
+.tb-right a { font-family: 'Montserrat', sans-serif; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.5); text-decoration: none; position: relative; padding-bottom: 2px; transition: color 0.25s; }
+.tb-right a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--cream); transition: width 0.3s cubic-bezier(.4,0,.2,1); }
+.tb-right a:hover, .tb-right a.active { color: var(--cream); }
+.tb-right a:hover::after, .tb-right a.active::after { width: 100%; }
+
+/* HERO */
+#hero { min-height: 100vh; background: var(--crimson); display: flex; flex-direction: column; overflow: hidden; position: relative; padding-top: 56px; }
+#hero::before { content: ''; position: absolute; inset: 0; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"); background-size: 200px 200px; opacity: 0.35; pointer-events: none; animation: grainShift 0.5s steps(1) infinite; }
+@keyframes grainShift { 0%{transform:translate(0,0)} 20%{transform:translate(-2px,1px)} 40%{transform:translate(2px,-1px)} 60%{transform:translate(-1px,2px)} 80%{transform:translate(1px,-2px)} 100%{transform:translate(0,0)} }
+.hero-grid { position: absolute; inset: 0; pointer-events: none; z-index: 0; display: grid; grid-template-columns: repeat(6, 1fr); }
+.hero-grid span { border-right: 1px solid rgba(255,255,255,0.04); }
+.hero-orb { position: absolute; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%); animation: orbFloat 12s ease-in-out infinite; }
+.hero-orb:nth-child(1) { width: 700px; height: 700px; top: -250px; right: -150px; }
+.hero-orb:nth-child(2) { width: 450px; height: 450px; bottom: -120px; left: 5%; animation-delay: -6s; animation-duration: 16s; }
+@keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(20px,-20px) scale(1.04)} 66%{transform:translate(-10px,14px) scale(0.97)} }
+
+.hero-body { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 3rem 3rem 2rem; position: relative; z-index: 2; }
+
+.hero-hook { font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; opacity: 0; animation: fadeUp 0.7s 0.2s forwards; }
+.hero-hook::before { content:''; width: 2rem; height: 1px; background: var(--gold); }
+
+.hero-name { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(6rem, 14vw, 13rem); font-weight: 900; font-style: italic; line-height: 0.86; letter-spacing: -0.02em; color: var(--cream); margin-bottom: 2.5rem; overflow: hidden; }
+.hero-name .line { display: block; opacity: 0; animation: slideUp 1s cubic-bezier(.16,1,.3,1) forwards; }
+.hero-name .line:nth-child(1) { animation-delay: 0.4s; }
+.hero-name .line.sub { font-style: normal; font-weight: 300; font-size: clamp(1.6rem, 3.5vw, 3.2rem); letter-spacing: 0.38em; text-transform: uppercase; color: rgba(245,240,232,0.22); margin-top: 0.2em; animation-delay: 0.6s; }
+
+.hero-pitch { max-width: 640px; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 400; font-style: italic; line-height: 1.6; color: rgba(245,240,232,0.82); opacity: 0; animation: fadeUp 0.8s 0.8s forwards; margin-bottom: 2.5rem; }
+.hero-pitch strong { color: var(--cream); font-style: normal; font-weight: 700; }
+
+@keyframes slideUp { from{opacity:0;transform:translateY(70px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+.hero-star { position: absolute; right: 6%; top: 28%; width: 100px; height: 100px; opacity: 0; animation: fadeUp 1s 1.1s forwards; }
+
+.hero-bottom { display: flex; justify-content: space-between; align-items: center; padding: 2rem 3rem 3rem; z-index: 2; position: relative; border-top: 1px solid rgba(255,255,255,0.08); opacity: 0; animation: fadeUp 0.8s 1s forwards; }
+.hero-awards { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-award-pill { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(201,168,76,0.4); padding: 0.55rem 1.1rem; font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-light); background: rgba(201,168,76,0.06); }
+.hero-award-pill span { font-size: 0.85em; opacity: 0.7; }
+.hero-cta-group { display: flex; align-items: center; gap: 1.5rem; }
+.hero-meta { font-family: 'Montserrat', sans-serif; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.3); line-height: 2.1; text-align: right; }
+.btn-ghost-light { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--cream); border: 1px solid rgba(245,240,232,0.4); padding: 1rem 2.2rem; text-decoration: none; transition: background 0.25s, color 0.25s; white-space: nowrap; display: inline-block; }
+.btn-ghost-light:hover { background: var(--cream); color: var(--crimson); }
+.hero-scroll { position: absolute; bottom: 0; left: 3rem; writing-mode: vertical-rl; font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,240,232,0.28); display: flex; align-items: center; gap: 0.8rem; padding-bottom: 2rem; opacity: 0; animation: fadeUp 0.8s 1.5s forwards; }
+.hero-scroll::after { content:''; width: 1px; height: 55px; background: linear-gradient(to bottom, rgba(245,240,232,0.28), transparent); animation: scrollPulse 2.2s ease-in-out infinite; }
+@keyframes scrollPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ABOUT */
+#about { background: var(--cream); padding: 8rem 3rem; position: relative; }
+#about::before { content: '01'; position: absolute; top: 3rem; right: 2rem; font-family: 'Playfair Display', Georgia, serif; font-size: 14rem; font-weight: 900; font-style: italic; color: rgba(26,18,8,0.025); line-height: 1; pointer-events: none; user-select: none; }
+.about-header { display: flex; align-items: baseline; gap: 2rem; margin-bottom: 5rem; border-bottom: 1px solid var(--border-cream); padding-bottom: 2rem; }
+.section-num { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--crimson); }
+.section-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; font-style: italic; color: var(--ink); line-height: 1; }
+.about-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+.about-pull { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.5rem, 2.4vw, 2.1rem); font-weight: 400; font-style: italic; line-height: 1.5; color: var(--crimson); margin-bottom: 2.5rem; border-left: 2px solid var(--crimson); padding-left: 1.5rem; }
+.about-body { font-size: 1.1rem; line-height: 1.9; color: rgba(26,18,8,0.68); margin-bottom: 1.5rem; }
+.about-body strong { color: var(--ink); font-weight: 500; font-style: italic; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border-cream); border: 1px solid var(--border-cream); }
+.stat-box { background: var(--cream); padding: 2.2rem 1.5rem; transition: background 0.3s; position: relative; overflow: hidden; }
+.stat-box::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--crimson); transform: scaleX(0); transform-origin: left; transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
+.stat-box:hover { background: rgba(139,26,26,0.03); }
+.stat-box:hover::after { transform: scaleX(1); }
+.stat-n { font-family: 'Playfair Display', Georgia, serif; font-size: 3.8rem; font-weight: 700; line-height: 1; color: var(--crimson); margin-bottom: 0.4rem; }
+.stat-l { font-family: 'Montserrat', sans-serif; font-size: 0.52rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+/* SKILLS */
+#skills { background: var(--crimson); padding: 8rem 3rem; position: relative; overflow: hidden; }
+#skills::before { content: '02'; position: absolute; bottom: 2rem; left: 1rem; font-family: 'Playfair Display', Georgia, serif; font-size: 16rem; font-weight: 900; font-style: italic; color: rgba(245,240,232,0.03); line-height: 1; pointer-events: none; user-select: none; }
+.skills-header { display: flex; align-items: baseline; gap: 2rem; margin-bottom: 5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2rem; }
+.skills-header .section-num { color: rgba(245,240,232,0.4); }
+.skills-header .section-title { color: var(--cream); }
+.skills-layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.skill-col { padding: 2.5rem 3rem; border-right: 1px solid rgba(255,255,255,0.07); }
+.skill-col:last-child { border-right: none; }
+.skill-col-title { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(245,240,232,0.35); margin-bottom: 2.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 0.75rem; }
+.skill-col-title::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+.skill-entry { padding: 0.9rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.skill-entry:last-child { border-bottom: none; }
+.skill-entry-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.55rem; }
+.skill-entry-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.08rem; font-weight: 300; font-style: italic; color: var(--cream); }
+.skill-entry-lvl { font-family: 'Montserrat', sans-serif; font-size: 0.45rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(245,240,232,0.25); }
+.skill-bar { height: 1px; background: rgba(255,255,255,0.08); position: relative; overflow: hidden; }
+.skill-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, rgba(201,168,76,0.8), rgba(201,168,76,0.3)); width: 0%; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.skill-bar-fill.animate { width: var(--pct); }
+
+/* PROJECTS */
+#projects { background: var(--cream); padding: 8rem 0; }
+.projects-top { display: flex; align-items: baseline; justify-content: space-between; padding: 0 3rem 2.5rem; border-bottom: 1px solid var(--border-cream); }
+.projects-count { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+.proj-panel { border-bottom: 1px solid var(--border-cream); display: grid; grid-template-columns: 1fr 1fr; min-height: 60vh; position: relative; }
+.proj-panel:nth-child(even) .proj-panel-left { order: 2; }
+.proj-panel:nth-child(even) .proj-panel-right { order: 1; }
+.proj-panel-left { padding: 5rem 4rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+.proj-panel-right { padding: 5rem 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+
+.proj-dark { background: var(--crimson-deep); }
+.proj-panel-num { font-family: 'Playfair Display', Georgia, serif; font-size: 9rem; font-weight: 900; font-style: italic; color: rgba(245,240,232,0.05); line-height: 0.8; position: absolute; bottom: 1rem; right: 1.5rem; pointer-events: none; }
+.proj-label { font-family: 'Montserrat', sans-serif; font-size: 0.52rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,240,232,0.35); margin-bottom: 2rem; }
+.proj-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 3.2vw, 3rem); font-weight: 700; font-style: italic; color: var(--cream); line-height: 1.08; margin-bottom: 1.8rem; }
+.proj-summary { font-size: 1.08rem; line-height: 1.88; color: rgba(245,240,232,0.65); font-style: italic; font-weight: 300; }
+.proj-light { background: var(--cream-dark); }
+.proj-detail-head { font-family: 'Montserrat', sans-serif; font-size: 0.52rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; }
+.proj-detail-text { font-size: 1.08rem; line-height: 1.88; color: rgba(26,18,8,0.65); font-style: italic; margin-bottom: 1.5rem; }
+
+.proj-award { display: inline-flex; align-items: center; gap: 0.6rem; border: 1px solid rgba(201,168,76,0.45); padding: 0.5rem 1rem; width: fit-content; font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 2rem; background: rgba(201,168,76,0.05); }
+
+.proj-outcomes { margin-bottom: 2rem; }
+.proj-outcome { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border-cream); font-size: 1.05rem; line-height: 1.65; color: rgba(26,18,8,0.68); font-style: italic; }
+.proj-outcome:last-child { border-bottom: none; }
+.proj-outcome::before { content: '—'; color: var(--crimson); font-style: normal; font-weight: 500; flex-shrink: 0; margin-top: 0.05em; }
+
+.proj-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto; padding-top: 2rem; }
+.tag { font-family: 'Montserrat', sans-serif; font-size: 0.48rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border-cream); padding: 0.35rem 0.8rem; background: var(--cream); transition: background 0.2s, color 0.2s; }
+.tag:hover { background: var(--crimson); color: var(--cream); border-color: var(--crimson); }
+.tag-dark { background: transparent; border-color: rgba(245,240,232,0.15); color: rgba(245,240,232,0.45); }
+.tag-dark:hover { background: rgba(245,240,232,0.1); color: var(--cream); }
+
+/* CONTACT LAYOUT */
+#contact { background: var(--crimson); padding: 8rem 3rem; position: relative; overflow: hidden; }
+.contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; position: relative; z-index: 1; }
+.contact-inner { }
+.contact-sub { font-size: 1.05rem; line-height: 1.85; color: rgba(245,240,232,0.6); font-style: italic; margin-bottom: 2.5rem; max-width: 420px; }
+
+/* Contact form */
+.contact-form-wrap { background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.12); padding: 3rem; }
+.form-head { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-bottom: 2.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(245,240,232,0.1); }
+.form-group { margin-bottom: 1.5rem; }
+.form-label { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-bottom: 0.6rem; }
+.form-input { width: 100%; background: rgba(245,240,232,0.07); border: 1px solid rgba(245,240,232,0.15); color: var(--cream); font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; font-style: italic; padding: 0.85rem 1rem; outline: none; transition: border-color 0.25s, background 0.25s; resize: none; }
+.form-input::placeholder { color: rgba(245,240,232,0.25); }
+.form-input:focus { border-color: rgba(245,240,232,0.45); background: rgba(245,240,232,0.1); }
+.form-textarea { min-height: 120px; }
+.form-btn { width: 100%; font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--crimson); background: var(--cream); border: none; padding: 1.1rem 2rem; cursor: pointer; transition: background 0.25s, transform 0.2s; margin-top: 0.5rem; }
+.form-btn:hover { background: var(--cream-dark); transform: translateY(-1px); }
+.form-btn:active { transform: translateY(0); }
+.form-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.form-status { margin-top: 1rem; font-family: 'Montserrat', sans-serif; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; min-height: 1.2em; }
+.form-status.ok { color: #5BCA7E; }
+.form-status.err { color: #E88A8A; }
+
+@media (max-width: 900px) {
+  .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+  #contact { padding: 5rem 1.5rem; }
+}
+
+.contact-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(245,240,232,0.06); pointer-events: none; animation: ringExpand 8s ease-out infinite; }
+.contact-ring:nth-child(1) { width: 400px; height: 400px; right: -100px; bottom: -100px; animation-delay: 0s; }
+.contact-ring:nth-child(2) { width: 700px; height: 700px; right: -250px; bottom: -250px; animation-delay: -3s; }
+.contact-ring:nth-child(3) { width: 1000px; height: 1000px; right: -400px; bottom: -400px; animation-delay: -6s; }
+@keyframes ringExpand { 0%{opacity:0;transform:scale(0.8)} 30%{opacity:1} 100%{opacity:0;transform:scale(1.1)} }
+.contact-watermark { position: absolute; bottom: -6rem; right: -3rem; font-family: 'Playfair Display', Georgia, serif; font-size: 22vw; font-weight: 900; font-style: italic; color: rgba(245,240,232,0.03); line-height: 1; pointer-events: none; user-select: none; white-space: nowrap; }
+.contact-inner { position: relative; z-index: 1; max-width: 750px; }
+.contact-pre { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(245,240,232,0.35); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+.contact-pre::before { content:''; width:2.5rem; height:1px; background:rgba(245,240,232,0.2); }
+.contact-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; font-style: italic; color: var(--cream); line-height: 1; margin-bottom: 3.5rem; }
+.contact-email { display: block; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(1.1rem, 2.2vw, 1.9rem); font-style: italic; color: var(--cream); text-decoration: none; padding-bottom: 0.5rem; width: fit-content; margin-bottom: 3rem; position: relative; }
+.contact-email::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: rgba(245,240,232,0.4); transform: scaleX(1); transform-origin: left; transition: transform 0.4s cubic-bezier(.4,0,.2,1); }
+.contact-email:hover::after { transform: scaleX(0); transform-origin: right; }
+.contact-links { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+.contact-link { font-family: 'Montserrat', sans-serif; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(245,240,232,0.5); text-decoration: none; padding: 0.85rem 1.8rem; border: 1px solid rgba(245,240,232,0.18); transition: all 0.25s; }
+.contact-link:hover { color: var(--cream); border-color: rgba(245,240,232,0.55); background: rgba(245,240,232,0.05); }
+.avail-badge { display: inline-flex; align-items: center; gap: 0.6rem; font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.5); }
+.avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #5BCA7E; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(91,202,126,0.4)} 50%{box-shadow:0 0 0 8px rgba(91,202,126,0)} }
+
+/* FOOTER */
+footer { background: var(--crimson-deep); border-top: 1px solid rgba(245,240,232,0.07); padding: 1.5rem 3rem; display: flex; justify-content: space-between; align-items: center; }
+footer p { font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,232,0.25); }
+
+/* REVEALS */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.85s cubic-bezier(.4,0,.2,1), transform 0.85s cubic-bezier(.4,0,.2,1); }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-left { opacity: 0; transform: translateX(-24px); transition: opacity 0.85s cubic-bezier(.4,0,.2,1), transform 0.85s cubic-bezier(.4,0,.2,1); }
+.reveal-left.visible { opacity: 1; transform: none; }
+.reveal-scale { opacity: 0; transform: scale(0.96); transition: opacity 0.7s cubic-bezier(.4,0,.2,1), transform 0.7s cubic-bezier(.4,0,.2,1); }
+.reveal-scale.visible { opacity: 1; transform: none; }
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .top-bar { padding: 0 1.5rem; grid-template-columns: 1fr 1fr; }
+  .tb-center { display: none; }
+  .tb-right { gap: 1.2rem; }
+  #about, #skills { padding: 5rem 1.5rem; }
+  .about-cols, .skills-layout { grid-template-columns: 1fr; gap: 3rem; }
+  .skill-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); padding: 2rem 0; }
+  .skill-col:last-child { border-bottom: none; }
+  .proj-panel { grid-template-columns: 1fr; min-height: auto; }
+  .proj-panel:nth-child(even) .proj-panel-left,
+  .proj-panel:nth-child(even) .proj-panel-right { order: unset; }
+  .proj-panel-left, .proj-panel-right { padding: 4rem 1.5rem; }
+  #projects { padding: 5rem 0; }
+  .projects-top { padding: 0 1.5rem 2rem; }
+  #contact { padding: 5rem 1.5rem; }
+  .hero-body { padding: 3rem 1.5rem 2rem; }
+  .hero-bottom { padding: 2rem 1.5rem 2.5rem; flex-direction: column; align-items: flex-start; gap: 2rem; }
+  .hero-star, .hero-scroll { display: none; }
+  .contact-watermark { display: none; }
+  footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+  #about::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scroll-progress"><div class="scroll-progress-bar" id="progressBar"></div></div>
+
+<header class="top-bar" id="topBar">
+  <div class="tb-left">Aerospace Engineer · Toronto</div>
+  <div class="tb-center">Hero Ado</div>
+  <nav class="tb-right">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Work</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-orb"></div>
+  <div class="hero-orb"></div>
+  <div class="hero-grid" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <div class="hero-body">
+    <div class="hero-hook">✦ Open to Co-op &amp; Internships · Fall 2026</div>
+    <h1 class="hero-name">
+      <span class="line">Hero</span>
+      <span class="line sub">Ado</span>
+    </h1>
+    <p class="hero-pitch">
+      3rd-year Aerospace Engineering student at TMU passionate about <strong>aircraft performance &amp; maintenance</strong> — with hands-on experience in project management, CAD, FEA, CFD, and physical fabrication. Two competition podiums. Five projects. Ready to contribute on day one.
+    </p>
+
+    <svg class="hero-star" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g id="starG" style="transform-origin:40px 40px">
+        <line x1="40" y1="2" x2="40" y2="78" stroke="rgba(245,240,232,0.5)" stroke-width="1.5"/>
+        <line x1="2" y1="40" x2="78" y2="40" stroke="rgba(245,240,232,0.5)" stroke-width="1.5"/>
+        <line x1="14" y1="14" x2="66" y2="66" stroke="rgba(245,240,232,0.3)" stroke-width="1.5"/>
+        <line x1="66" y1="14" x2="14" y2="66" stroke="rgba(245,240,232,0.3)" stroke-width="1.5"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-bottom">
+    <div class="hero-awards">
+      <div class="hero-award-pill">✦ 3rd Place <span>· Most Innovative Design · Rocketry</span></div>
+      <div class="hero-award-pill">✦ 2nd Place <span>· Furthest Flight · Glider</span></div>
+    </div>
+    <div class="hero-cta-group">
+      <div class="hero-meta">Toronto Metropolitan University<br>Aerospace Engineering · 3rd Year</div>
+      <a href="#contact" class="btn-ghost-light">Hire me →</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-header reveal">
+    <span class="section-num">01</span>
+    <h2 class="section-title">About</h2>
+  </div>
+  <div class="about-cols">
+    <div class="reveal-left">
+      <p class="about-pull">"I build what others only simulate — from concept to launchpad."</p>
+      <p class="about-body">I'm a 3rd-year <strong>Aerospace Engineering student at Toronto Metropolitan University</strong>, enrolled since Fall 2023. I'm deeply passionate about <strong>aircraft performance and maintenance</strong> — understanding how aircraft behave, degrade, and are kept airworthy fascinates me as much as designing them.</p>
+      <p class="about-body">I bring experience across the full engineering stack: <strong>project management</strong>, CAD, FEA, CFD, and hands-on manufacturing. My projects span model rocketry, carbon fibre gliders, landing gear structural analysis, walking robot linkages, and airfoil CFD. Actively seeking <strong>co-op and internship opportunities starting Fall 2026</strong> in aerospace, MRO, and defence.</p>
+    </div>
+    <div class="reveal">
+      <div class="stats-grid">
+        <div class="stat-box reveal-scale delay-1"><div class="stat-n">3rd</div><div class="stat-l">Year of Study</div></div>
+        <div class="stat-box reveal-scale delay-2"><div class="stat-n">5</div><div class="stat-l">Projects</div></div>
+        <div class="stat-box reveal-scale delay-3"><div class="stat-n">2×</div><div class="stat-l">Competition Podiums</div></div>
+        <div class="stat-box reveal-scale delay-2"><div class="stat-n">3</div><div class="stat-l">CAD Platforms</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="skills-header reveal">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Technical Skills</h2>
+  </div>
+  <div class="skills-layout">
+    <div class="skill-col reveal">
+      <div class="skill-col-title">Simulation &amp; Analysis</div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">ANSYS Fluent (CFD)</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:90%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">ANSYS Mechanical (FEA)</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:88%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">Modal / Vibrational Analysis</span><span class="skill-entry-lvl">Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:65%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">OpenRocket</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:92%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">MATLAB</span><span class="skill-entry-lvl">Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:70%"></div></div></div>
+    </div>
+    <div class="skill-col reveal delay-1">
+      <div class="skill-col-title">Design &amp; CAD</div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">SolidWorks</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:92%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">Onshape</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:88%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">CATIA V5</span><span class="skill-entry-lvl">Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:65%"></div></div></div>
+    </div>
+    <div class="skill-col reveal delay-2">
+      <div class="skill-col-title">Manufacturing</div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">3D Printing (FDM)</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:94%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">Laser Cutting</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:90%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">Carbon Fibre Composite Layup</span><span class="skill-entry-lvl">Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:70%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">Telemetry Data Analysis</span><span class="skill-entry-lvl">Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:68%"></div></div></div>
+      <div class="skill-entry"><div class="skill-entry-top"><span class="skill-entry-name">Technical Documentation</span><span class="skill-entry-lvl">Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" style="--pct:88%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-top reveal">
+    <div style="display:flex;align-items:baseline;gap:2rem;">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Selected Work</h2>
+    </div>
+    <span class="projects-count">5 Projects</span>
+  </div>
+
+  <!-- 01 Rocketry -->
+  <div class="proj-panel">
+    <div class="proj-panel-left proj-dark reveal-left">
+      <div>
+        <div class="proj-label">Project 01 · Featured</div>
+        <h3 class="proj-title">Model Rocketry<br>Design &amp; Launch</h3>
+        <div class="proj-award">✦ 3rd Place · Most Innovative Design</div>
+        <p class="proj-summary">Led the full aerodynamic design cycle for a team-built model rocket. Introduced a dimpled nose cone concept borrowed from golf ball physics to reduce pressure drag — earning the competition's innovation award.</p>
+      </div>
+      <div class="proj-tags">
+        <span class="tag tag-dark">OpenRocket</span><span class="tag tag-dark">Onshape</span><span class="tag tag-dark">SolidWorks</span><span class="tag tag-dark">3D Printing</span><span class="tag tag-dark">Laser Cutting</span><span class="tag tag-dark">Telemetry</span>
+      </div>
+      <div class="proj-panel-num" aria-hidden="true">01</div>
+    </div>
+    <div class="proj-panel-right proj-light reveal">
+      <div class="proj-detail-head">What I built &amp; what I proved</div>
+      <p class="proj-detail-text">Ran iterative OpenRocket simulations across 6 fin geometries and 3 nose cone profiles. All parts split between 3D-printed components (nose cone, boat tail) and laser-cut ply (fins, body tube slots). Post-launch telemetry extracted aero coefficients and validated predictions.</p>
+      <div class="proj-outcomes">
+        <div class="proj-outcome">Telemetry-to-simulation agreement within 8% on drag coefficient — design validated</div>
+        <div class="proj-outcome">Dimpled nose cone won Most Innovative Design out of the full competition field</div>
+        <div class="proj-outcome">Designed payload bay, shock cord routing, and parachute deployment sequence</div>
+        <div class="proj-outcome">Coordinated fab tasks across a 5-person team under hard competition deadline</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 Glider -->
+  <div class="proj-panel">
+    <div class="proj-panel-left proj-dark reveal">
+      <div>
+        <div class="proj-label">Project 02</div>
+        <h3 class="proj-title">Carbon Fibre<br>Glider Design</h3>
+        <div class="proj-award">✦ 2nd Place · Furthest Flight Distance</div>
+        <p class="proj-summary">Designed and hand-built a competition glider optimised for maximum distance. Chose CFRP for the wing and fuselage to hit an extreme stiffness-to-weight ratio — the aircraft that flew furthest of the entire field.</p>
+      </div>
+      <div class="proj-tags">
+        <span class="tag tag-dark">CFRP Composite Layup</span><span class="tag tag-dark">Wing Aerodynamics</span><span class="tag tag-dark">Structural Fabrication</span>
+      </div>
+      <div class="proj-panel-num" aria-hidden="true">02</div>
+    </div>
+    <div class="proj-panel-right proj-light reveal-left">
+      <div class="proj-detail-head">Engineering decisions</div>
+      <p class="proj-detail-text">Airfoil selection driven by glide ratio modelling — targeting highest L/D within the competition weight class. Composite layup involved fibre orientation scheduling, vacuum bagging, cure cycle management, and post-cure trimming to final geometry.</p>
+      <div class="proj-outcomes">
+        <div class="proj-outcome">Achieved the longest flight distance in the entire competition</div>
+        <div class="proj-outcome">CFRP wing delivered target stiffness under 60 g structural mass</div>
+        <div class="proj-outcome">Completed full fabrication cycle: layup → vacuum bag → cure → trim → test flight</div>
+        <div class="proj-outcome">Documented manufacturing process and failure modes for future iteration</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Landing Gear -->
+  <div class="proj-panel">
+    <div class="proj-panel-left proj-dark reveal-left">
+      <div>
+        <div class="proj-label">Project 03</div>
+        <h3 class="proj-title">Landing Gear<br>System Design</h3>
+        <p class="proj-summary">Full landing gear assembly designed from scratch in SolidWorks and stress-tested in ANSYS under realistic load cases. Modal analysis identified critical natural frequencies before any physical build.</p>
+      </div>
+      <div class="proj-tags">
+        <span class="tag tag-dark">SolidWorks</span><span class="tag tag-dark">ANSYS FEA</span><span class="tag tag-dark">Modal Analysis</span><span class="tag tag-dark">Technical Docs</span>
+      </div>
+      <div class="proj-panel-num" aria-hidden="true">03</div>
+    </div>
+    <div class="proj-panel-right proj-light reveal">
+      <div class="proj-detail-head">Analysis scope</div>
+      <p class="proj-detail-text">Applied 2.5g hard-landing and side-load cases across the full assembly, using mesh convergence studies to confirm accuracy. Vibrational analysis revealed two modes within the operating band — geometry iterated to shift them outside the excitation range.</p>
+      <div class="proj-outcomes">
+        <div class="proj-outcome">Von Mises stress and safety factors evaluated across all structural members</div>
+        <div class="proj-outcome">Modal analysis found 4 natural frequencies; 2 critical modes detuned via geometry iteration</div>
+        <div class="proj-outcome">Full technical documentation produced: drawings, FEA reports, assembly instructions</div>
+        <div class="proj-outcome">Demonstrated industry-standard simulation workflow end-to-end</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 CFD -->
+  <div class="proj-panel">
+    <div class="proj-panel-left proj-dark reveal">
+      <div>
+        <div class="proj-label">Project 04</div>
+        <h3 class="proj-title">Airfoil CFD<br>Analysis</h3>
+        <p class="proj-summary">Conducted CFD analysis of airfoil geometries in ANSYS Fluent, evaluating lift and drag coefficients and pressure distributions across varying angles of attack. Performed mesh refinement studies to verify solution accuracy and convergence.</p>
+      </div>
+      <div class="proj-tags">
+        <span class="tag tag-dark">ANSYS Fluent</span><span class="tag tag-dark">Mesh Refinement</span><span class="tag tag-dark">Turbulence Modelling</span>
+      </div>
+      <div class="proj-panel-num" aria-hidden="true">04</div>
+    </div>
+    <div class="proj-panel-right proj-light reveal-left">
+      <div class="proj-detail-head">Simulation approach</div>
+      <p class="proj-detail-text">Conducted computational fluid dynamics analysis of airfoil geometries in ANSYS Fluent. Evaluated lift, drag coefficients, and pressure distributions across varying angles of attack. Performed systematic mesh refinement studies to ensure solution accuracy and convergence.</p>
+      <div class="proj-outcomes">
+        <div class="proj-outcome">Evaluated lift and drag coefficients across varying angles of attack for multiple airfoil geometries</div>
+        <div class="proj-outcome">Analysed pressure distributions to identify flow separation and stall characteristics</div>
+        <div class="proj-outcome">Systematic mesh refinement studies confirmed solution accuracy and convergence</div>
+        <div class="proj-outcome">Produced detailed simulation reports documenting methodology and results</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 Walking Robot -->
+  <div class="proj-panel">
+    <div class="proj-panel-left proj-dark reveal-left">
+      <div>
+        <div class="proj-label">Project 05</div>
+        <h3 class="proj-title">Walking Robot<br>Linkage System</h3>
+        <p class="proj-summary">Designed, optimised, and physically built a gear-driven walking mechanism — no motors, pure mechanical power transmission. MATLAB kinematics modelling drove link-length optimisation before a single part was cut.</p>
+      </div>
+      <div class="proj-tags">
+        <span class="tag tag-dark">CATIA V5</span><span class="tag tag-dark">MATLAB</span><span class="tag tag-dark">Laser Cutting</span><span class="tag tag-dark">Kinematics</span>
+      </div>
+      <div class="proj-panel-num" aria-hidden="true">05</div>
+    </div>
+    <div class="proj-panel-right proj-light reveal">
+      <div class="proj-detail-head">From equations to walking hardware</div>
+      <p class="proj-detail-text">Built a MATLAB kinematic model of the linkage, parameterised over 6 link lengths, ran constrained optimisation to minimise foot-path deviation. Winning geometry modelled in CATIA V5 and exported to DXF for laser cutting.</p>
+      <div class="proj-outcomes">
+        <div class="proj-outcome">MATLAB optimisation reduced foot-path deviation by 34% vs baseline geometry</div>
+        <div class="proj-outcome">Full 3D assembly modelled in CATIA V5 with clearance analysis before fabrication</div>
+        <div class="proj-outcome">All links laser cut from 3mm acrylic; gear train assembled from standard components</div>
+        <div class="proj-outcome">Robot walked continuously under hand-crank input — zero motor, full kinematic transmission</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-ring"></div>
+  <div class="contact-ring"></div>
+  <div class="contact-ring"></div>
+  <div class="contact-watermark" aria-hidden="true">Contact</div>
+  <div class="contact-layout reveal">
+    <div class="contact-inner">
+      <div class="contact-pre">04 · Contact</div>
+      <h2 class="contact-title">Add me to<br>your team.</h2>
+      <p class="contact-sub">I'm a 3rd-year Aerospace Engineering student at TMU specialising in aircraft performance, FEA, CFD, and hands-on manufacturing — available for co-op starting Fall 2026.</p>
+      <a href="mailto:heroado39@gmail.com" class="contact-email">heroado39@gmail.com</a>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/hero-ado" target="_blank" rel="noopener" class="contact-link">LinkedIn ↗</a>
+        <a href="resume.pdf" download class="contact-link">Resume PDF ↓</a>
+      </div>
+      <div class="avail-badge"><div class="avail-dot"></div>Available for co-op · Fall 2026</div>
+    </div>
+
+    <div class="contact-form-wrap">
+      <div class="form-head">Send me a message</div>
+      <div class="form-group">
+        <label class="form-label" for="f-name">Your Name</label>
+        <input class="form-input" id="f-name" type="text" placeholder="Jane Smith" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-email">Your Email</label>
+        <input class="form-input" id="f-email" type="email" placeholder="jane@company.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-msg">Message</label>
+        <textarea class="form-input form-textarea" id="f-msg" placeholder="We'd love to have you for our summer co-op…" rows="5"></textarea>
+      </div>
+      <button class="form-btn" id="formBtn" onclick="sendMsg()">Send Message →</button>
+      <div class="form-status" id="formStatus"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Hero Ado</p>
+  <p>Toronto, ON · Open to Co-op Fall 2026</p>
+</footer>
+
+<script>
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+(function anim(){rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+document.querySelectorAll('a,button,.stat-box,.proj-panel,.skill-entry').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.classList.add('expand');ring.classList.add('hide');});
+  el.addEventListener('mouseleave',()=>{cursor.classList.remove('expand');ring.classList.remove('hide');});
+});
+
+const progressBar=document.getElementById('progressBar');
+const topBar=document.getElementById('topBar');
+window.addEventListener('scroll',()=>{
+  progressBar.style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';
+  topBar.classList.toggle('scrolled',window.scrollY>80);
+},{passive:true});
+
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.07});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-scale').forEach(el=>obs.observe(el));
+
+const barObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.skill-bar-fill').forEach(b=>b.classList.add('animate'));barObs.unobserve(e.target);}});},{threshold:0.2});
+document.querySelectorAll('.skill-col').forEach(c=>barObs.observe(c));
+
+const sections=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('.tb-right a');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id;});links.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur);});},{passive:true});
+
+const starG=document.getElementById('starG');
+if(starG){let a=0;(function r(){a+=0.018;starG.style.transform=`rotate(${a}deg)`;requestAnimationFrame(r);})();}
+
+function sendMsg(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const msg=document.getElementById('f-msg').value.trim();
+  const status=document.getElementById('formStatus');
+  const btn=document.getElementById('formBtn');
+  if(!name||!email||!msg){status.className='form-status err';status.textContent='Please fill in all fields.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status.className='form-status err';status.textContent='Please enter a valid email.';return;}
+  const subject=encodeURIComponent(`Co-op Enquiry from ${name}`);
+  const body=encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${msg}`);
+  window.location.href=`mailto:heroado39@gmail.com?subject=${subject}&body=${body}`;
+  status.className='form-status ok';
+  status.textContent='Opening your email client…';
+  btn.disabled=true;
+  setTimeout(()=>{btn.disabled=false;status.textContent='';},4000);
+}
+</script>
+</body>
+</html>
